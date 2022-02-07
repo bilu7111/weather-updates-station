@@ -20,6 +20,6 @@ app.get("/", (req, res)=>{
     }
 })
 
-app.listen(process.env.$PORT, 'localhost', ()=>{
-    console.log(`app listening on PORT ` + process.env.API_PORT);
+app.listen(process.env.$PORT || 8080, 'localhost', ()=>{
+    console.log(`app listening on PORT ` + process.env.$PORT);
 })
