@@ -8,11 +8,16 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res)=>{
+    try{
     const userIP = requestIp.getClientIp(req);;
     console.log(userIP);
     const userLocation = geoip.lookup(userIP);
     console.log(userLocation);
     res.status(200).json(userLocation);
+    }
+    catch(err){
+        res.status(500).send(err);
+    }
 })
 
 app.listen(process.env.$PORT, 'localhost', ()=>{
