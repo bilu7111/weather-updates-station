@@ -9,17 +9,18 @@ app.use(express.json());
 
 app.get("/", (req, res)=>{
     try{
-    const userIP = requestIp.getClientIp(req);;
-    console.log(userIP);
-    const userLocation = geoip.lookup(userIP);
-    console.log(userLocation);
-    res.status(200).json(userLocation);
+        const userIP = requestIp.getClientIp(req);;
+        console.log(userIP);
+        const userLocation = geoip.lookup(userIP);
+        console.log(userLocation);
+        res.status(200).json(userLocation);
     }
     catch(err){
+        console.log(err);
         res.status(500).send(err);
     }
 })
 
-app.listen(process.env.$PORT || 8080, 'localhost', ()=>{
+app.listen(process.env.PORT || 8080, 'localhost', ()=>{
     console.log(`app listening on PORT ` + process.env.$PORT);
 })
