@@ -15,6 +15,6 @@ app.get("/", (req, res)=>{
     res.status(200).json(userLocation);
 })
 
-app.listen(process.env.API_PORT, 'localhost', ()=>{
+app.listen(process.env.PORT, 'localhost', ()=>{
     console.log(`app listening on PORT ` + process.env.API_PORT);
 })
