@@ -49,6 +49,7 @@ module.exports = ( io ) => {
         
                         // If in some case the user is not available
                         if(!userAvailable){
+                            console.log(payload, "not found");
                             socket.emit("user_not_found");
                             task.stop();
                             return null;

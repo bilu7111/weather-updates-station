@@ -10,9 +10,11 @@
 </head>
 <body>
     <h1> Live Weather Updates </h1>
-    <p> Get weather updates for a specific city after every minute.</p>
+    <p> Get weather updates for a specific city after every minute.<br/>(By Default, server's default city weather details are fetched)</p>
+    <p> Seconds Until Next Update:- <span id="time"></span></p>
+    <p> City Targeted:- <span id="city-targeted"></span></p>
     <div class="search-container">
-        <input oninput="searchOnCity(event)" class="search" placeholder="Search specific city"/>
+        <input onkeyup="searchOnCity(event)" id="search" class="search" placeholder="Search specific city"/>
     </div>
     <div class="weather-details">
         <div id="city-name"></div>
@@ -22,6 +24,9 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
   const socket = io();
+  var lastSearch = "";
+  var secUntilNextUpdate = 0;
+  var timeInterval = null;
   let apiKey;
     window.onload = (ev) =>{
         apiKey = localStorage.getItem("apiKey");
@@ -29,7 +34,17 @@
             axios.post("/register-user")
             .then((res)=>{
                 localStorage.setItem("apiKey", res.data.apiKey);
-                socket.emit("get_update", {apiKey: res.data.apiKey})
+                apiKey = res.data.apiKey;
+                socket.emit("get_update", {apiKey: apiKey});
+                clearInterval(timeInterval);
+                secUntilNextUpdate = 0;
+
+                document.getElementById("time").innerText = 60 - secUntilNextUpdate;
+                timeInterval = setInterval(()=> {
+                    secUntilNextUpdate += 1;
+                    document.getElementById("time").innerText = 60 - secUntilNextUpdate
+                }, 1000);
+
             })
             .catch((err)=>{
                 console.log(err);
@@ -37,17 +52,39 @@
         }
         else{
             socket.emit("get_update", {apiKey: apiKey});
+            clearInterval(timeInterval);
+            secUntilNextUpdate = 0;
+
+            document.getElementById("time").innerText = secUntilNextUpdate;
+            timeInterval = setInterval(()=> {
+                secUntilNextUpdate += 1;
+                document.getElementById("time").innerText = 60 - secUntilNextUpdate;
+            }, 1000);
+
         }
         socket.on("weather_update", (payload)=> {
+            secUntilNextUpdate = 0;
+            document.getElementById("time").innerText = 60 - secUntilNextUpdate;
             document.getElementById("city-name").textContent = payload.weather_update.name;
             document.getElementById("raw-data").textContent = JSON.stringify(payload.weather_update.main);
         });
     };
 
     function searchOnCity(event) {
-        if(event.target.value.length > 3){
+        if(event.target.value.length > 3 && event.target.value.length > (lastSearch.length + 2)){
+            lastSearch = event.target.value;
             socket.emit("get_update", {apiKey:apiKey, location: event.target.value});
+            if(event.key !== "Backspace"){
+                document.getElementById("search").setAttribute("disabled", "true");
+
+                setInterval(()=>{
+                document.getElementById("search").removeAttribute("disabled");
+                },3000);
+
+            }
         }
+        document.getElementById("city-targeted").innerText = lastSearch;
     }
+
 </script>
 </html>

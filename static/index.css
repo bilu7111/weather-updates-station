@@ -28,3 +28,8 @@ div#city-name {
 div#raw-data {
     text-align: center;
 }
+button {
+    margin: auto;
+    display: flex;
+    cursor: pointer;
+}
