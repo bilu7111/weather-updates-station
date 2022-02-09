@@ -25,7 +25,6 @@
 <script>
   const socket = io();
   var lastSearch = "";
-  var secUntilNextUpdate = 0;
   var timeInterval = null;
   let apiKey;
     window.onload = (ev) =>{
@@ -36,15 +35,6 @@
                 localStorage.setItem("apiKey", res.data.apiKey);
                 apiKey = res.data.apiKey;
                 socket.emit("get_update", {apiKey: apiKey});
-                clearInterval(timeInterval);
-                secUntilNextUpdate = 0;
-
-                document.getElementById("time").innerText = 60 - secUntilNextUpdate;
-                timeInterval = setInterval(()=> {
-                    secUntilNextUpdate += 1;
-                    document.getElementById("time").innerText = 60 - secUntilNextUpdate
-                }, 1000);
-
             })
             .catch((err)=>{
                 console.log(err);
@@ -52,36 +42,23 @@
         }
         else{
             socket.emit("get_update", {apiKey: apiKey});
-            clearInterval(timeInterval);
-            secUntilNextUpdate = 0;
-
-            document.getElementById("time").innerText = secUntilNextUpdate;
-            timeInterval = setInterval(()=> {
-                secUntilNextUpdate += 1;
-                document.getElementById("time").innerText = 60 - secUntilNextUpdate;
-            }, 1000);
-
         }
         socket.on("weather_update", (payload)=> {
-            secUntilNextUpdate = 0;
-            document.getElementById("time").innerText = 60 - secUntilNextUpdate;
+            clearInterval(timeInterval);
+            document.getElementById("time").innerText = 60 - new Date().getSeconds();
+            timeInterval = setInterval(()=> {
+                document.getElementById("time").innerText = 60 - new Date().getSeconds();
+            }, 1000);
+            document.getElementById("time").innerText = 60 - new Date().getSeconds();
             document.getElementById("city-name").textContent = payload.weather_update.name;
             document.getElementById("raw-data").textContent = JSON.stringify(payload.weather_update.main);
         });
     };
 
     function searchOnCity(event) {
-        if(event.target.value.length > 3 && event.target.value.length > (lastSearch.length + 2)){
+        if(event.target.value.length > 3){
             lastSearch = event.target.value;
             socket.emit("get_update", {apiKey:apiKey, location: event.target.value});
-            if(event.key !== "Backspace"){
-                document.getElementById("search").setAttribute("disabled", "true");
-
-                setInterval(()=>{
-                document.getElementById("search").removeAttribute("disabled");
-                },3000);
-
-            }
         }
         document.getElementById("city-targeted").innerText = lastSearch;
     }

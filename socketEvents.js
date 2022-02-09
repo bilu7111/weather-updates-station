@@ -27,6 +27,7 @@ module.exports = ( io ) => {
                             apiRes = await axios.get(url)
                             .catch(err=>{throw new Error(err.message)});
             weather_update = apiRes.data;
+            
             socket.emit("weather_update", {weather_update});
 
             socket.on("get_update", (payload)=>{
