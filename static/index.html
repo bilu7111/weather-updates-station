@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Updates</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js" integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="./index.css" rel="stylesheet">
+</head>
+<body>
+    <h1> Live Weather Updates </h1>
+    <p> Get weather updates for a specific city after every minute.</p>
+    <div class="search-container">
+        <input oninput="searchOnCity(event)" class="search" placeholder="Search specific city"/>
+    </div>
+    <div class="weather-details">
+        <div id="city-name"></div>
+        <div id="raw-data"></div>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  let apiKey;
+    window.onload = (ev) =>{
+        apiKey = localStorage.getItem("apiKey");
+        if(!apiKey){
+            axios.post("/register-user")
+            .then((res)=>{
+                localStorage.setItem("apiKey", res.data.apiKey);
+                socket.emit("get_update", {apiKey: res.data.apiKey})
+            })
+            .catch((err)=>{
+                console.log(err);
+            });
+        }
+        else{
+            socket.emit("get_update", {apiKey: apiKey});
+        }
+        socket.on("weather_update", (payload)=> {
+            document.getElementById("city-name").textContent = payload.weather_update.name;
+            document.getElementById("raw-data").textContent = JSON.stringify(payload.weather_update.main);
+        });
+    };
+
+    function searchOnCity(event) {
+        if(event.target.value.length > 3){
+            socket.emit("get_update", {apiKey:apiKey, location: event.target.value});
+        }
+    }
+</script>
+</html>

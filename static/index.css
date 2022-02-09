@@ -1,0 +1,30 @@
+h1{
+    text-align: center;
+}
+p{
+    text-align: center;
+}
+input.search {
+    padding: 15px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    border-width: 0.5px;
+    margin: auto;
+    display: flex;
+    margin-top: 25px;
+    min-width: 450px;
+}
+
+input.search:focus {
+    outline: none;
+}
+
+div#city-name {
+    font-size: 24px;
+    margin: 25px;
+    text-align: center;
+}
+
+div#raw-data {
+    text-align: center;
+}

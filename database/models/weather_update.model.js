@@ -2,11 +2,11 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../sequelize");
 
 const WeatherUpdate = sequelize.define("weather_update",{
-    id: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        primaryKey: true
-      },
+      id: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          primaryKey: true
+        },
       main: {
         type: DataTypes.STRING,
         allowNull: false
