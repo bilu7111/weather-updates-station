@@ -1,6 +1,6 @@
-Weather Updates Station
+# Weather Updates Station
 
-# GET LIVE UPDATES AFTER EVERY MINUTE
+GET LIVE UPDATES AFTER EVERY MINUTE
 
 # THIRD PARTY LIBRARIES USED
 1:- Socket IO(socket.io)
